@@ -6,12 +6,10 @@ class EmployeeService {
         return createdEmployee.toJSON();
     }
 
-    async getByEmpId(empId: string) {
-        const createdEmployee = await employeeModel.findOne({ empId: empId || "" });
+    async getByEmpId(empId: string, options?: { ignoreFields?: string | Array<string> }) {
+        const createdEmployee = await employeeModel.findOne({ empId: empId || "" }, options?.ignoreFields);
         return createdEmployee === null ? null : createdEmployee.toJSON();
     }
-
-    
 }
 
 export default EmployeeService;
