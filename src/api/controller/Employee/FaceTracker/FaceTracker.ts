@@ -24,11 +24,17 @@ export const imageVerifier = async (req: Request, res: Response) => {
 
         const newImageFeatureVectors = await imageProcessor.generateFeatureVector(req.file.path);
 
+        if (!newImageFeatureVectors) {
+            await captureStorageService.addCaptureTimeStamp(empId, new Date(), { isMatch: false, timeStamp: new Date() });
+            res.send({ isMatch: false });
+            return;
+        }
+
         const isMatch = await imageProcessor.compareFeatureMap(Float32Array.from(fetchedEmployee.features), newImageFeatureVectors);
         await captureStorageService.addCaptureTimeStamp(empId, new Date(), { isMatch: isMatch, timeStamp: new Date() });
         res.send({ isMatch: isMatch });
     } catch (error) {
-        logError("An error occured in login API", error);
+        logError("An error occured in Image Verify API", error);
         res.status(500).send({ code: "server/internal-error", message: "An internal server error has occured" });
     }
 };

@@ -10,6 +10,9 @@ export interface IHours {
     logoutTime: Date;
     verificationCaptures: Array<ICaptures>;
     totalHours: number;
+    createdAt: Date;
+    updatedAt: Date;
+    id: string;
 }
 
 const capturesSchema = new mongoose.Schema<ICaptures>({
@@ -20,13 +23,18 @@ const capturesSchema = new mongoose.Schema<ICaptures>({
     },
 });
 
-const hoursSchema = new mongoose.Schema<IHours>({
-    empId: { type: String, required: true },
-    loginTime: { type: Date, required: true },
-    logoutTime: { type: Date },
-    verificationCaptures: [{ type: capturesSchema }],
-    totalHours: { type: Number, default: 0 },
-});
+const hoursSchema = new mongoose.Schema<IHours>(
+    {
+        empId: { type: String, required: true },
+        loginTime: { type: Date, required: true },
+        logoutTime: { type: Date },
+        verificationCaptures: [{ type: capturesSchema }],
+        totalHours: { type: Number, default: 0 },
+    },
+    {
+        timestamps: true,
+    }
+);
 
 const hoursModel = mongoose.model("hours", hoursSchema, "hours");
 

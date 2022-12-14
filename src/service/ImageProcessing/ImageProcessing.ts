@@ -59,13 +59,11 @@ class ImageProcessorService {
 
         return result[0]?.descriptor;
     }
-    async  compareFeatureMap(actualFeatures: Float32Array, featuresToCheck: Float32Array) {
-        const distance = await faceapi.euclideanDistance(actualFeatures, featuresToCheck);
+    async compareFeatureMap(actualFeatures: Float32Array, featuresToCheck: Float32Array) {
+        const distance = await faceapi.euclideanDistance(actualFeatures || Float32Array.from([]), featuresToCheck || Float32Array.from([]));
         if (distance < maxDistance) return true;
         return false;
     }
 }
-
-
 
 export default ImageProcessorService;
