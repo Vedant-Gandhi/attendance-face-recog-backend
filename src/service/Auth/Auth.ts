@@ -17,6 +17,10 @@ class AuthService {
         const user = await userModel.create(userData);
         return user.toJSON();
     }
+    async deleteByEmpId(empId: string) {
+        let deleted = await userModel.deleteOne({ empId: empId });
+        return deleted.deletedCount > 0;
+    }
 }
 
 export default AuthService;
