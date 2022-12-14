@@ -11,3 +11,5 @@ const createEmployee = async (req: Request, res: Response) => {
         res.status(500).send({ code: "server/internal-error", message: "An internal server error has occured" });
     }
 };
+
+
