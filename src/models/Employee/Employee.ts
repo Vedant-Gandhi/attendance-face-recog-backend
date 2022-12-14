@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import paginate from "mongoose-paginate-v2";
 
 interface IEmployee {
     id: string;
@@ -27,6 +28,11 @@ const employeeSchema = new mongoose.Schema<IEmployee>({
     features: { type: [Number], default: [] },
 });
 
-const employeeModel = mongoose.model("employee", employeeSchema, "employee");
+employeeSchema.plugin(paginate);
 
-export { employeeModel, IEmployee , ICreateEmployee };
+//@ts-ignore
+interface EmployeeDocument extends mongoose.Document, IEmployee {}
+
+const employeeModel = mongoose.model<EmployeeDocument, mongoose.PaginateModel<EmployeeDocument>>("employee", employeeSchema, "employee");
+
+export { employeeModel, IEmployee, ICreateEmployee };
