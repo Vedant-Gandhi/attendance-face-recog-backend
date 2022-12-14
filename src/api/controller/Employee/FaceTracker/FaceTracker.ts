@@ -28,6 +28,7 @@ export const imageVerifier = async (req: Request, res: Response) => {
 
         const decodedImageBuffer = Buffer.from(base64Image.replace("data:image/jpeg;base64,", ""), "base64");
 
+    
         // This section must be a new function as it is a storage engine.
         await fs.writeFile(imageSavePath, decodedImageBuffer);
         const newImageFeatureVectors = await imageProcessor.generateFeatureVector(imageSavePath);
