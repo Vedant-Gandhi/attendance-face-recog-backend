@@ -24,12 +24,16 @@ export const imageVerifier = async (req: Request, res: Response) => {
             return;
         }
 
+
+
         const imageSavePath = `tempUploads/${Date.now()}-${Math.random().toFixed(0)}.jpg`;
 
         const decodedImageBuffer = Buffer.from(base64Image.replace("data:image/jpeg;base64,", ""), "base64");
 
     
         // This section must be a new function as it is a storage engine.
+
+
         await fs.writeFile(imageSavePath, decodedImageBuffer);
         const newImageFeatureVectors = await imageProcessor.generateFeatureVector(imageSavePath);
         if (!newImageFeatureVectors) {

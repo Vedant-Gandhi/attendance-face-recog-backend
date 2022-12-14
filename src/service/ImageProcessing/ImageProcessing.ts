@@ -9,7 +9,7 @@ import dotenv from "dotenv-flow";
 
 dotenv.load(process.env.LOC_ENV || "", {});
 
-const maxDistance = 0.3;
+const maxDistance = 0.5;
 
 export class ModelLoadError extends Error {
     constructor(message?: string) {
