@@ -3,14 +3,16 @@ import { logError } from "../../../../logger/logger";
 import CaptureStorageService from "../../../../service/CaptureStorage/CaptureStorageService";
 import EmployeeService from "../../../../service/Employee/Employee";
 import ImageProcessorService from "../../../../service/ImageProcessing/ImageProcessing";
+import fs from "fs/promises";
 
 export const imageVerifier = async (req: Request, res: Response) => {
     const empId = req.body?.empId || "";
+    const base64Image: string = req.body?.image || "";
     const imageProcessor = new ImageProcessorService();
     const captureStorageService = new CaptureStorageService();
     const employeeService = new EmployeeService();
     try {
-        if (!req.file || typeof empId !== "string" || empId === "") {
+        if (base64Image === "" || typeof empId !== "string" || empId === "") {
             res.status(400).send({ code: "req/incomplete-data", message: "Invalid data received" });
             return;
         }
@@ -22,8 +24,13 @@ export const imageVerifier = async (req: Request, res: Response) => {
             return;
         }
 
-        const newImageFeatureVectors = await imageProcessor.generateFeatureVector(req.file.path);
+        const imageSavePath = `tempUploads/${Date.now()}-${Math.random().toFixed(0)}.jpg`;
 
+        const decodedImageBuffer = Buffer.from(base64Image.replace("data:image/jpeg;base64,", ""), "base64");
+
+        // This section must be a new function as it is a storage engine.
+        await fs.writeFile(imageSavePath, decodedImageBuffer);
+        const newImageFeatureVectors = await imageProcessor.generateFeatureVector(imageSavePath);
         if (!newImageFeatureVectors) {
             await captureStorageService.addCaptureTimeStamp(empId, new Date(), { isMatch: false, timeStamp: new Date() });
             res.send({ isMatch: false });

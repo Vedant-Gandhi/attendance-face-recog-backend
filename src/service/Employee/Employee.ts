@@ -10,6 +10,13 @@ class EmployeeService {
         const createdEmployee = await employeeModel.findOne({ empId: empId || "" }, options?.ignoreFields);
         return createdEmployee === null ? null : createdEmployee.toJSON();
     }
+
+    async deleteByEmpId(empId: string) {
+        let deleted = await employeeModel.deleteOne({ empId: empId });
+        return deleted.deletedCount > 0;
+    }
+
+    
 }
 
 export default EmployeeService;
