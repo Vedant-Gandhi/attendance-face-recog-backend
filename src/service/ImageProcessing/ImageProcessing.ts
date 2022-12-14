@@ -9,7 +9,7 @@ import dotenv from "dotenv-flow";
 
 dotenv.load(process.env.LOC_ENV || "", {});
 
-const matchThreshold = 0.55;
+const maxDistance = 0.3;
 
 export class ModelLoadError extends Error {
     constructor(message?: string) {
@@ -59,8 +59,13 @@ class ImageProcessorService {
 
         return result[0]?.descriptor;
     }
+    async  compareFeatureMap(actualFeatures: Float32Array, featuresToCheck: Float32Array) {
+        const distance = await faceapi.euclideanDistance(actualFeatures, featuresToCheck);
+        if (distance < maxDistance) return true;
+        return false;
+    }
 }
 
-export async function compareFeatureMap(uid: string, actualFeatures: Float32Array, featuresToCheck: Float32Array) {}
+
 
 export default ImageProcessorService;

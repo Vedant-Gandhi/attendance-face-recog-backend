@@ -19,5 +19,5 @@ ImageProcessorService.loadModels().catch((err) => {
 const portToListen = process.env.PORT || 3000;
 
 app.listen(portToListen, () => {
-    logInfo("Server started listening on port" + portToListen);
+    logInfo("Server started listening on port:" + portToListen);
 });

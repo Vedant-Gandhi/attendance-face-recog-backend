@@ -27,6 +27,7 @@ export const login = async (req: Request, res: Response) => {
         }
 
         const authService = new AuthService();
+        const employeeService = new EmployeeService();
 
         const user = await authService.getByEmpId(empId);
 
@@ -41,9 +42,11 @@ export const login = async (req: Request, res: Response) => {
             return;
         }
 
-        res.send({ ...user, passwordHash: undefined });
-    } catch (error:any) {
-        logError("An error occured in login API",error)
+        const emp = user.role === UserRoles.EMPLOYEE ? await employeeService.getByEmpId(user.empId, { ignoreFields: ["features"] }) : null;
+
+        res.send({ ...user, passwordHash: undefined, details: emp });
+    } catch (error: any) {
+        logError("An error occured in login API", error);
         res.status(500).send({ code: "server/internal-error", message: "An internal server error has occured" });
     }
 };
@@ -95,7 +98,7 @@ export const registerEmployee = async (req: Request, res: Response) => {
         };
 
         const employee = await employeeService.create(employeeData);
-        res.send(employee)
+        res.send(employee);
     } catch (error) {
         logError("An error occured in Employee Register API", error);
         res.status(500).send({ code: "server/internal-error", message: "An internal server error occured" });

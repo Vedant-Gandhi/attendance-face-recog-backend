@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 
-interface ICaptures {
+export interface ICaptures {
     isMatch: boolean;
     timeStamp: Date;
 }
-interface IHours {
+export interface IHours {
     empId: String;
     loginTime: Date;
     logoutTime: Date;
