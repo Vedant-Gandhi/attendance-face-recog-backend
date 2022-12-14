@@ -1,6 +1,6 @@
 import express from "express";
 import { profileUploadMulter, registerEmployee } from "../controller/Auth/Auth.js";
-import { deleteEmployee, getEmployee, updateEmployee } from "../controller/Employee/Employee.js";
+import { deleteEmployee, getEmployee, getEmployeesPaginated, updateEmployee } from "../controller/Employee/Employee.js";
 import { imageVerifier } from "../controller/Employee/FaceTracker/FaceTracker.js";
 
 const router = express.Router();
@@ -10,5 +10,6 @@ router.post("/verify-capture", profileUploadMulter.single("captureImage"), image
 router.delete("/:empId", deleteEmployee);
 router.put("/:empId", updateEmployee);
 router.get("/:empId",getEmployee)
+router.get("/",getEmployeesPaginated)
 
 export { router as employeeRouter };

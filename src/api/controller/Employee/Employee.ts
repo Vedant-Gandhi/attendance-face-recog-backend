@@ -76,3 +76,19 @@ export const getEmployee = async (req: Request, res: Response) => {
         res.status(500).send({ code: "server/internal-error", message: "An internal server error has occured" });
     }
 };
+
+export const getEmployeesPaginated = async (req: Request, res: Response) => {
+    const limit = parseInt((req.query?.limit as any) || "20");
+    const page = parseInt((req.query?.page as any) || "1");
+
+    try {
+        const employeeService = new EmployeeService();
+
+        const paginateEmployees = await employeeService.getEmployeesPaginated({ limit, page, ignoreFields: ["features"] });
+
+        res.send(paginateEmployees);
+    } catch (error) {
+        logError("An error occured while deleting employee", error);
+        res.status(500).send({ code: "server/internal-error", message: "An internal server error has occured" });
+    }
+};
