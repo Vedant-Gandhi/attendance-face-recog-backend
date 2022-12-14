@@ -15,8 +15,10 @@ class EmployeeService {
         let deleted = await employeeModel.deleteOne({ empId: empId });
         return deleted.deletedCount > 0;
     }
-
-    
+    async updateByEmpId(empId: string, updateFields: Partial<ICreateEmployee>) {
+        let updated = await employeeModel.updateOne({ empId: empId }, updateFields);
+        return updated.modifiedCount > 0;
+    }
 }
 
 export default EmployeeService;
