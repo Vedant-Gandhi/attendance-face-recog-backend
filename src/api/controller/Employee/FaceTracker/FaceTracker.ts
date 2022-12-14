@@ -1,10 +1,13 @@
 import { Request, Response } from "express";
+import { logError } from "../../../../logger/logger";
+import CaptureStorageService from "../../../../service/CaptureStorage/CaptureStorageService";
 import EmployeeService from "../../../../service/Employee/Employee";
 import ImageProcessorService from "../../../../service/ImageProcessing/ImageProcessing";
 
-const imageVerifier = async (req: Request, res: Response) => {
-    const empId = req.body?.empId;
+export const imageVerifier = async (req: Request, res: Response) => {
+    const empId = req.body?.empId || "";
     const imageProcessor = new ImageProcessorService();
+    const captureStorageService = new CaptureStorageService();
     const employeeService = new EmployeeService();
     try {
         if (!req.file || typeof empId !== "string" || empId === "") {
@@ -22,5 +25,10 @@ const imageVerifier = async (req: Request, res: Response) => {
         const newImageFeatureVectors = await imageProcessor.generateFeatureVector(req.file.path);
 
         const isMatch = await imageProcessor.compareFeatureMap(Float32Array.from(fetchedEmployee.features), newImageFeatureVectors);
-    } catch (error) {}
+        await captureStorageService.addCaptureTimeStamp(empId, new Date(), { isMatch: isMatch, timeStamp: new Date() });
+        res.send({ isMatch: isMatch });
+    } catch (error) {
+        logError("An error occured in login API", error);
+        res.status(500).send({ code: "server/internal-error", message: "An internal server error has occured" });
+    }
 };

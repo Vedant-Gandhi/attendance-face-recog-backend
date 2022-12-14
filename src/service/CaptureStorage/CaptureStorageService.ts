@@ -12,7 +12,7 @@ class CaptureStorageService {
         const updatedCapture = await hoursModel.updateOne(
             {
                 empId: empId,
-                createdAt: date,
+                createdAt: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`,
             },
             {
                 $push: {
