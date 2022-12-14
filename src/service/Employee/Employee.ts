@@ -19,6 +19,7 @@ class EmployeeService {
         let updated = await employeeModel.updateOne({ empId: empId }, updateFields);
         return updated.modifiedCount > 0;
     }
+    
 }
 
 export default EmployeeService;

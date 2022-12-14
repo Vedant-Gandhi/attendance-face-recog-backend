@@ -55,3 +55,24 @@ export const updateEmployee = async (req: Request, res: Response) => {
         res.status(500).send({ code: "server/internal-error", message: "An internal server error has occured" });
     }
 };
+
+export const getEmployee = async (req: Request, res: Response) => {
+    const empId = req.params.empId || "";
+    if (empId === "") {
+        res.status(400).send({ code: "employee/invalid-employee-id", message: "Employee ID is invalid" });
+        return;
+    }
+    try {
+        const employeeService = new EmployeeService();
+
+        const employee = await employeeService.getByEmpId(empId);
+        if (employee === null) {
+            res.status(404).send({ code: "employee/not-found", message: "Employee not found" });
+            return;
+        }
+        res.status(200).send(employee);
+    } catch (error) {
+        logError("An error occured while deleting employee", error);
+        res.status(500).send({ code: "server/internal-error", message: "An internal server error has occured" });
+    }
+};
