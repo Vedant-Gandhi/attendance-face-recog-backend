@@ -7,6 +7,7 @@ import TrackerService from "../../../../service/Tracker/Tracker";
 import { getTimeDiffInHours } from "../../../../utils";
 
 import dotenv from "dotenv-flow";
+import path from "path";
 
 dotenv.load(process.env.LOC_ENV || "", {});
 
