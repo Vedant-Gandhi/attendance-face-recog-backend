@@ -13,6 +13,7 @@ export interface IHours {
     createdAt: Date;
     updatedAt: Date;
     id: string;
+    create: Date;
 }
 
 const capturesSchema = new mongoose.Schema<ICaptures>({
@@ -29,7 +30,8 @@ const hoursSchema = new mongoose.Schema<IHours>(
         loginTime: { type: Date, required: true },
         logoutTime: { type: Date },
         verificationCaptures: [{ type: capturesSchema }],
-        totalHours: { type: Number, default: 0 },
+        totalHours: { type: Number, default: 0.0 },
+        create: { type: Date, default: new Date() },
     },
     {
         timestamps: true,
