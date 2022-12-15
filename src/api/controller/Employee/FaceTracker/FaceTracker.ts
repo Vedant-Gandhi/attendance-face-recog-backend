@@ -14,7 +14,7 @@ dotenv.load(process.env.LOC_ENV || "", {});
 export const imageVerifier = async (req: Request, res: Response) => {
     const empId = req.body?.empId || "";
     const base64Image: string = req.body?.image || "";
-    const location = req.body.cords || {};
+    const location = req.body.coords || {};
 
     // To be set if the API is used only for verification and not for tracking purposes.Then the API will only verify the face.
     const verifyOnly = Boolean(req.body.verifyOnly || false);
