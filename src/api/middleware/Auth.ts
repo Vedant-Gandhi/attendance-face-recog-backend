@@ -4,6 +4,10 @@ import { logError, logInfo } from "../../logger/logger";
 import { UserRoles } from "../../models/User/UserModel";
 
 export const checkTokenValid = async (req: Request, res: Response, next: NextFunction) => {
+    if (process.env.NODE_ENV === "development") {
+        next();
+        return;
+    }
     try {
         const payload = req.headers.authorization || "";
         logInfo(`${payload}`);
@@ -26,6 +30,10 @@ export const checkTokenValid = async (req: Request, res: Response, next: NextFun
 
 export const isRoleValid = (roles: Array<UserRoles>) => {
     return async (req: Request, res: Response, next: NextFunction) => {
+        if (process.env.NODE_ENV === "development") {
+            next();
+            return;
+        }
         const decodedPayload = res.locals.tokenData || {};
 
         if (!decodedPayload || decodedPayload == null || typeof decodedPayload.role !== "string" || roles.indexOf(decodedPayload.role) === -1) {

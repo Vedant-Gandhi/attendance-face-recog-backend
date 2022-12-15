@@ -7,7 +7,7 @@ import { checkTokenValid, isRoleValid } from "../middleware/Auth.js";
 
 const router = express.Router();
 
-router.post("/register", profileUploadMulter.single("profileImage"), checkTokenValid, isRoleValid([UserRoles.ADMIN]), registerEmployee);
+router.post("/register",profileUploadMulter.single("profileImage"), checkTokenValid, isRoleValid([UserRoles.ADMIN]),  registerEmployee);
 router.post("/verify-capture", checkTokenValid, isRoleValid([UserRoles.EMPLOYEE]), imageVerifier);
 router.delete("/:empId", checkTokenValid, isRoleValid([UserRoles.ADMIN]), employeeController.deleteEmployee);
 router.put("/:empId", checkTokenValid, isRoleValid([UserRoles.ADMIN]), employeeController.updateEmployee);
