@@ -6,11 +6,25 @@ import EmployeeService from "../../../service/Employee/Employee";
 import { checkPasswordValidity, generatePasswordHash } from "../../../utils";
 
 import multer from "multer";
+import dotenv from "dotenv-flow";
+
 import ImageProcessorService from "../../../service/ImageProcessing/ImageProcessing";
 import { logError } from "../../../logger/logger";
+import path from "path";
+
+dotenv.load(process.env.LOC_ENV || "", {});
+
+const profileDiskStorage = multer.diskStorage({
+    destination: `${process.env.ROOT_IMAGE_DIR}/`,
+    filename(req, file, callback) {
+        const empId = req.body.empId;
+        callback(null, `profile-${empId || "--"}${path.extname(file.originalname)}`);
+        req.body.fileNameOnDisk = `profile-${empId || "--"}${path.extname(file.originalname)}`;
+    },
+});
 
 export const profileUploadMulter = multer({
-    dest: `${process.env.ROOT_IMAGE_DIR}/profile`,
+    storage: profileDiskStorage,
     limits: {
         fileSize: 5 * 1024 * 1024,
     },
@@ -68,6 +82,7 @@ export const registerEmployee = async (req: Request, res: Response) => {
         }
 
         const passwordHash = await generatePasswordHash(data.password);
+        const profileUrl = `http://localhost:${process.env.PORT || 3000}/image/${req.body.fileNameOnDisk}`;
 
         const authData: ICreateUser = {
             empId: data.empId,
@@ -92,7 +107,7 @@ export const registerEmployee = async (req: Request, res: Response) => {
             joiningDate: data.joiningDate,
             name: data.name,
             position: data.position,
-            profileUrl: "",
+            profileUrl: profileUrl,
             salary: data.salary,
             features: Array.from(featureVector),
         };
