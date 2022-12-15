@@ -29,6 +29,8 @@ export default class TrackerService {
         return capture.toJSON();
     }
 
+    
+
     async addOrUpdateTimestamp(empId: string, date: Date, capture: ICaptures, hourToIncrement = 0) {
         let nextDay = new Date(date);
         nextDay.setDate(nextDay.getDate() + 1);

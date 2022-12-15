@@ -4,6 +4,10 @@ export interface ICaptures {
     isMatch: boolean;
     timeStamp: Date;
 }
+export interface ICustomLocation {
+    latitude: Number;
+    longitude: Number;
+}
 export interface IHours {
     empId: String;
     loginTime: Date;
@@ -14,6 +18,7 @@ export interface IHours {
     updatedAt: Date;
     id: string;
     create: Date;
+    location: ICustomLocation;
 }
 
 const capturesSchema = new mongoose.Schema<ICaptures>({
@@ -22,6 +27,10 @@ const capturesSchema = new mongoose.Schema<ICaptures>({
         type: Date,
         required: true,
     },
+});
+const customLocationSchema = new mongoose.Schema<ICustomLocation>({
+    latitude: { type: Number, default: null },
+    longitude: { type: Number, default: null },
 });
 
 const hoursSchema = new mongoose.Schema<IHours>(
@@ -32,6 +41,7 @@ const hoursSchema = new mongoose.Schema<IHours>(
         verificationCaptures: [{ type: capturesSchema }],
         totalHours: { type: Number, default: 0.0 },
         create: { type: Date, default: new Date() },
+        location: { type: customLocationSchema },
     },
     {
         timestamps: true,

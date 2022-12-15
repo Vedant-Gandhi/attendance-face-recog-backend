@@ -11,10 +11,7 @@ export const getImageFromStorage = (req: Request, res: Response) => {
             res.status(404).send();
             return;
         }
-
-        res.sendFile(`${process.env.ROOT_IMAGE_DIR}/${imageId}`, {
-            
-        });
+        res.sendFile(`${process.env.ROOT_IMAGE_DIR}/${imageId}`);
     } catch (error) {
         logError("An error occured while fetching image", error);
         res.status(500).send({ code: "server/internal-error", message: "An internal server error has occured." });

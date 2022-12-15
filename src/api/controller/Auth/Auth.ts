@@ -11,6 +11,7 @@ import dotenv from "dotenv-flow";
 import ImageProcessorService from "../../../service/ImageProcessing/ImageProcessing";
 import { logError } from "../../../logger/logger";
 import path from "path";
+import TrackerService from "../../../service/Tracker/Tracker";
 
 dotenv.load(process.env.LOC_ENV || "", {});
 
@@ -34,6 +35,7 @@ export const login = async (req: Request, res: Response) => {
     try {
         const empId = req.body.empId;
         const password = req.body.password;
+        const location = req.body.cords || {};
 
         if (typeof empId !== "string" || typeof password !== "string" || empId === "" || password === "") {
             res.status(400).send({ code: "auth/invalid-credentials", message: "Invalid credentials" });
@@ -42,6 +44,17 @@ export const login = async (req: Request, res: Response) => {
 
         const authService = new AuthService();
         const employeeService = new EmployeeService();
+        const trackerService = new TrackerService();
+
+        await trackerService.createStorageService({
+            empId: empId,
+            loginTime: new Date(),
+            location: {
+                longitude: location.latitude || -1,
+                latitude: location.latitude || -1,
+            },
+
+        });
 
         const user = await authService.getByEmpId(empId);
 
