@@ -9,7 +9,7 @@ import multer from "multer";
 import dotenv from "dotenv-flow";
 
 import ImageProcessorService from "../../../service/ImageProcessing/ImageProcessing";
-import { logError } from "../../../logger/logger";
+import { logError, logInfo } from "../../../logger/logger";
 import path from "path";
 import TrackerService from "../../../service/Tracker/Tracker";
 
@@ -53,7 +53,6 @@ export const login = async (req: Request, res: Response) => {
                 longitude: location.latitude || -1,
                 latitude: location.latitude || -1,
             },
-
         });
 
         const user = await authService.getByEmpId(empId);
@@ -127,6 +126,33 @@ export const registerEmployee = async (req: Request, res: Response) => {
 
         const employee = await employeeService.create(employeeData);
         res.send(employee);
+    } catch (error) {
+        logError("An error occured in Employee Register API", error);
+        res.status(500).send({ code: "server/internal-error", message: "An internal server error occured" });
+    }
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+    try {
+        const empId = req.body.empId || "";
+        const newPass = req.body.password || "";
+
+        if (empId === "" || newPass === "") {
+            res.status(400).send({ code: "auth/invalid-credentials", message: "Invalid credentials" });
+            return;
+        }
+
+        const authService = new AuthService();
+
+        const newHashedPassword = await generatePasswordHash(newPass);
+
+        const isUpdated = await authService.updatePasswordByEmpId(empId, newHashedPassword);
+
+        if (isUpdated) {
+            res.status(204).send();
+            return;
+        }
+        res.status(404).send({ code: "user/not-found", message: "User not found" });
     } catch (error) {
         logError("An error occured in Employee Register API", error);
         res.status(500).send({ code: "server/internal-error", message: "An internal server error occured" });
