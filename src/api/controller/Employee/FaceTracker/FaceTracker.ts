@@ -47,7 +47,7 @@ export const imageVerifier = async (req: Request, res: Response) => {
             }
         }
 
-        const imageSavePath = `${process.env.TEMP_IMAGE_DIR}/${Date.now()}-${Math.random().toFixed(0)}.jpg`;
+        const imageSavePath = `${process.env.TEMP_IMAGE_DIR}${path.sep}${Date.now()}-${Math.random().toFixed(0)}.jpg`;
 
         const decodedImageBuffer = Buffer.from(base64Image.replace("data:image/jpeg;base64,", ""), "base64");
 

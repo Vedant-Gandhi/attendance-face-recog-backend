@@ -102,7 +102,7 @@ export const registerEmployee = async (req: Request, res: Response) => {
         }
 
         const passwordHash = await generatePasswordHash(data.password);
-        const profileUrl = `http://localhost:${process.env.PORT || 3000}/image/${req.body.fileNameOnDisk}`;
+        const profileUrl = `http://localhost:${process.env.PORT || 3000}${path.sep}image${path.sep}${req.body.fileNameOnDisk}`;
 
         const authData: ICreateUser = {
             empId: data.empId,
