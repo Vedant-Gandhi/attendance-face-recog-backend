@@ -110,7 +110,7 @@ export const getEmployeeMonthlyWorkingHrs = async (req: Request, res: Response) 
 };
 
 export const searchEmployeeByName = async (req: Request, res: Response) => {
-    let namePattern = req.query.namePattern || "";
+    let namePattern = (req.query.namePattern as string) || "";
 
     try {
         const employeeService = new EmployeeService();

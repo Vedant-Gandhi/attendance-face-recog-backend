@@ -28,6 +28,16 @@ export default class TrackerService {
         const capture = await hoursModel.create(captureService);
         return capture.toJSON();
     }
+    async checkTimestampexists(empId: string, date: Date) {
+        let nextDay = new Date(date);
+        nextDay.setDate(date.getDate() + 1);
+        nextDay.setHours(0, 0, 0, 0);
+
+        let todaysDay = date;
+        todaysDay.setHours(0, 0, 0, 0);
+        const doesTrackExists = await hoursModel.exists({ empId: empId, createdAt: { $gte: todaysDay, $lt: nextDay } });
+        return doesTrackExists;
+    }
 
     async addOrUpdateTimestamp(empId: string, date: Date, capture: ICaptures, hourToIncrement = 0) {
         let nextDay = new Date(date);

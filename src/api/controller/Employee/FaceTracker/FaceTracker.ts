@@ -6,6 +6,10 @@ import fs from "fs/promises";
 import TrackerService from "../../../../service/Tracker/Tracker";
 import { getTimeDiffInHours } from "../../../../utils";
 
+import dotenv from "dotenv-flow";
+
+dotenv.load(process.env.LOC_ENV || "", {});
+
 export const imageVerifier = async (req: Request, res: Response) => {
     const empId = req.body?.empId || "";
     const base64Image: string = req.body?.image || "";
@@ -39,7 +43,7 @@ export const imageVerifier = async (req: Request, res: Response) => {
             }
         }
 
-        const imageSavePath = `tempUploads/${Date.now()}-${Math.random().toFixed(0)}.jpg`;
+        const imageSavePath = `${process.env.TEMP_IMAGE_DIR}/${Date.now()}-${Math.random().toFixed(0)}.jpg`;
 
         const decodedImageBuffer = Buffer.from(base64Image.replace("data:image/jpeg;base64,", ""), "base64");
 

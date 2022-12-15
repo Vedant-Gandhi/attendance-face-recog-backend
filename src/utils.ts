@@ -12,3 +12,10 @@ export async function getTimeDiffInHours(date1: Date, date2: Date) {
     diff /= 60 * 60;
     return Number(diff.toFixed(2));
 }
+
+export function calculateTimeDiffFromNowToDayEnd(date: Date) {
+    const tomorrowDate = new Date(date);
+    tomorrowDate.setHours(0, 0, 0, 0);
+    tomorrowDate.setDate(date.getDate() + 1);
+    return tomorrowDate.getTime() - date.getTime();
+}

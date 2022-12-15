@@ -3,15 +3,16 @@ import { ICreateEmployee } from "../../../models/Employee/Employee";
 import { ICreateUser, UserRoles } from "../../../models/User/UserModel";
 import AuthService from "../../../service/Auth/Auth";
 import EmployeeService from "../../../service/Employee/Employee";
-import { checkPasswordValidity, generatePasswordHash } from "../../../utils";
+import { calculateTimeDiffFromNowToDayEnd, checkPasswordValidity, generatePasswordHash } from "../../../utils";
 
 import multer from "multer";
 import dotenv from "dotenv-flow";
 
 import ImageProcessorService from "../../../service/ImageProcessing/ImageProcessing";
-import { logError, logInfo } from "../../../logger/logger";
+import { logError } from "../../../logger/logger";
 import path from "path";
 import TrackerService from "../../../service/Tracker/Tracker";
+import { generateToken } from "../../../auth/AuthUtils";
 
 dotenv.load(process.env.LOC_ENV || "", {});
 
@@ -37,6 +38,8 @@ export const login = async (req: Request, res: Response) => {
         const password = req.body.password;
         const location = req.body.cords || {};
 
+        const currentDate = new Date();
+
         if (typeof empId !== "string" || typeof password !== "string" || empId === "" || password === "") {
             res.status(400).send({ code: "auth/invalid-credentials", message: "Invalid credentials" });
             return;
@@ -46,14 +49,18 @@ export const login = async (req: Request, res: Response) => {
         const employeeService = new EmployeeService();
         const trackerService = new TrackerService();
 
-        await trackerService.createStorageService({
-            empId: empId,
-            loginTime: new Date(),
-            location: {
-                longitude: location.latitude || -1,
-                latitude: location.latitude || -1,
-            },
-        });
+        const doesTrackAlreadyExist = await trackerService.checkTimestampexists(empId, currentDate);
+
+        if (!doesTrackAlreadyExist) {
+            await trackerService.createStorageService({
+                empId: empId,
+                loginTime: currentDate,
+                location: {
+                    longitude: location.latitude || -1,
+                    latitude: location.latitude || -1,
+                },
+            });
+        }
 
         const user = await authService.getByEmpId(empId);
 
@@ -70,7 +77,12 @@ export const login = async (req: Request, res: Response) => {
 
         const emp = user.role === UserRoles.EMPLOYEE ? await employeeService.getByEmpId(user.empId, { ignoreFields: ["features"] }) : null;
 
-        res.send({ ...user, passwordHash: undefined, details: emp });
+        const tokenPayload = {
+            role: user.role,
+        };
+        const tokenExpiryTime = calculateTimeDiffFromNowToDayEnd(currentDate);
+        let token = await generateToken(tokenPayload, tokenExpiryTime);
+        res.send({ ...user, passwordHash: undefined, details: emp, token: token });
     } catch (error: any) {
         logError("An error occured in login API", error);
         res.status(500).send({ code: "server/internal-error", message: "An internal server error has occured" });
