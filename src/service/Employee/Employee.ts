@@ -21,6 +21,11 @@ class EmployeeService {
         return updated.modifiedCount > 0;
     }
 
+    async getEmployeesByName(namePattern: string) {
+        let employees = await employeeModel.find({ $text: { $search: namePattern || "" } });
+        return employees.map(employee=>employee.toJSON())
+    }
+
     async getEmployeesPaginated(options = { limit: 10, page: 1, ignoreFields: [""] }) {
         let ignoredFieldsMapped = options.ignoreFields.map((field) => `-${field}`).reduce((accumulator, currentVal) => `${accumulator} -${currentVal} `);
 

@@ -27,7 +27,7 @@ const employeeSchema = new mongoose.Schema<IEmployee>({
     joiningDate: { type: Date, required: true },
     features: { type: [Number], default: [] },
 });
-
+employeeSchema.index({ name: "text" });
 employeeSchema.plugin(paginate);
 
 //@ts-ignore

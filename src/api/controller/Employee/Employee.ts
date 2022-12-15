@@ -108,3 +108,18 @@ export const getEmployeeMonthlyWorkingHrs = async (req: Request, res: Response) 
         res.status(500).send({ code: "server/internal-error", message: "An internal server error has occured" });
     }
 };
+
+export const searchEmployeeByName = async (req: Request, res: Response) => {
+    let namePattern = req.query.namePattern || "";
+
+    try {
+        const employeeService = new EmployeeService();
+
+        const employees = await employeeService.getEmployeesByName(namePattern);
+
+        res.send(employees);
+    } catch (error) {
+        logError("An error occured while deleting employee", error);
+        res.status(500).send({ code: "server/internal-error", message: "An internal server error has occured" });
+    }
+};
