@@ -21,7 +21,7 @@ const profileDiskStorage = multer.diskStorage({
     filename(req, file, callback) {
         const empId = req.body.empId;
         callback(null, `profile-${empId || "--"}${path.extname(file.originalname)}`);
-        req.body.fileNameOnDisk = `profile-${empId || "--"}${path.extname(file.originalname)}`;
+        req.body.fileNameOnDisk = `profile-${empId || Date.now() || "--"}${path.extname(file.originalname)}`;
     },
 });
 
