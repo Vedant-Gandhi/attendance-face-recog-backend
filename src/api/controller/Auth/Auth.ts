@@ -40,6 +40,7 @@ export const login = async (req: Request, res: Response) => {
 
         const currentDate = new Date();
 
+        // Validations
         if (typeof empId !== "string" || typeof password !== "string" || empId === "" || password === "") {
             res.status(400).send({ code: "auth/invalid-credentials", message: "Invalid credentials" });
             return;
@@ -49,9 +50,19 @@ export const login = async (req: Request, res: Response) => {
         const employeeService = new EmployeeService();
         const trackerService = new TrackerService();
 
+        // Check here if track exists for todays day
         const doesTrackAlreadyExist = await trackerService.checkTimestampexists(empId, currentDate);
 
-        if (!doesTrackAlreadyExist) {
+        // Get the employee
+        const user = await authService.getByEmpId(empId);
+
+        if (user === null) {
+            res.status(404).send({ code: "user/not-found", message: "User not found" });
+            return;
+        }
+
+        // If the user is not employee and also today's track does not exist then only create a new track
+        if (!doesTrackAlreadyExist && user.role === UserRoles.EMPLOYEE) {
             await trackerService.createStorageService({
                 empId: empId,
                 loginTime: currentDate,
@@ -60,13 +71,6 @@ export const login = async (req: Request, res: Response) => {
                     latitude: location.latitude || -1,
                 },
             });
-        }
-
-        const user = await authService.getByEmpId(empId);
-
-        if (user === null) {
-            res.status(404).send({ code: "user/not-found", message: "User not found" });
-            return;
         }
         const isPasswordMatch = await checkPasswordValidity(password, user.passwordHash);
 
@@ -77,11 +81,13 @@ export const login = async (req: Request, res: Response) => {
 
         const emp = user.role === UserRoles.EMPLOYEE ? await employeeService.getByEmpId(user.empId, { ignoreFields: ["features"] }) : null;
 
+        // Generate JWT token
         const tokenPayload = {
             role: user.role,
         };
         const tokenExpiryTime = calculateTimeDiffFromNowToDayEnd(currentDate);
         let token = await generateToken(tokenPayload, tokenExpiryTime);
+
         res.send({ ...user, passwordHash: undefined, details: emp, token: token });
     } catch (error: any) {
         logError("An error occured in login API", error);
