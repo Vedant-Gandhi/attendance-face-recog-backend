@@ -41,7 +41,7 @@ const hoursSchema = new mongoose.Schema<IHours>(
         verificationCaptures: [{ type: capturesSchema }],
         totalHours: { type: Number, default: 0.0 },
         create: { type: Date, default: new Date() },
-        location: { type: customLocationSchema },
+        location: { type: customLocationSchema, default: {} },
     },
     {
         timestamps: true,

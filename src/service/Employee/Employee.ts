@@ -8,12 +8,7 @@ class EmployeeService {
     }
 
     async getByEmpId(empId: string, options = { ignoreFields: [""] }) {
-        const createdEmployee = await employeeModel.findOne(
-            { empId: empId || "" },
-            options?.ignoreFields?.map((field: any) => {
-                return `-${field}`;
-            })
-        );
+        const createdEmployee = await employeeModel.findOne({ empId: empId || "" });
         return createdEmployee === null ? null : createdEmployee.toJSON();
     }
 
@@ -69,7 +64,7 @@ class EmployeeService {
                 },
             },
             {},
-            { select: "empId createdAt totalHours location" }
+            { select: "empId createdAt totalHours" }
         );
 
         return monthlyData;
