@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { logError, logInfo } from "../../../../logger/logger";
+import { logError } from "../../../../logger/logger";
 import EmployeeService from "../../../../service/Employee/Employee";
 import ImageProcessorService from "../../../../service/ImageProcessing/ImageProcessing";
 import fs from "fs/promises";
@@ -13,6 +13,10 @@ dotenv.load(process.env.LOC_ENV || "", {});
 export const imageVerifier = async (req: Request, res: Response) => {
     const empId = req.body?.empId || "";
     const base64Image: string = req.body?.image || "";
+    const location = req.body.cords || {};
+
+    // To be set if the API is used only for verification and not for tracking purposes.Then the API will only verify the face.
+    const verifyOnly = Boolean(req.body.verifyOnly || false);
     const currentDate = new Date();
 
     let hoursToIncrement = 0;
@@ -35,7 +39,7 @@ export const imageVerifier = async (req: Request, res: Response) => {
 
         const trackerDetails = await trackerService.getDetailsByEmpIdforSingleDay(empId, currentDate);
 
-        if (trackerDetails !== null) {
+        if (trackerDetails !== null && !verifyOnly) {
             let lastTimeStamp = trackerDetails.verificationCaptures?.pop();
             if (lastTimeStamp) {
                 let diff = await getTimeDiffInHours(currentDate, lastTimeStamp.timeStamp);
@@ -58,8 +62,9 @@ export const imageVerifier = async (req: Request, res: Response) => {
             : false;
 
         // Add timestamp to the database
-        await trackerService.addOrUpdateTimestamp(empId, new Date(), { isMatch: isMatch, timeStamp: currentDate }, hoursToIncrement);
-
+        if (!verifyOnly) {
+            await trackerService.addOrUpdateTimestamp(empId, new Date(), { isMatch: isMatch, timeStamp: currentDate }, hoursToIncrement, location);
+        }
         res.send({ isMatch: isMatch });
     } catch (error) {
         logError("An error occured in Image Verify API", error);

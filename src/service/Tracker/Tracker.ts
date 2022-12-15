@@ -1,4 +1,4 @@
-import hoursModel, { ICaptures, IHours } from "../../models/Hours/Hours";
+import hoursModel, { ICaptures, ICustomLocation, IHours } from "../../models/Hours/Hours";
 
 export default class TrackerService {
     async getLastTimeStamp(empId: string, date: Date) {
@@ -39,7 +39,7 @@ export default class TrackerService {
         return doesTrackExists;
     }
 
-    async addOrUpdateTimestamp(empId: string, date: Date, capture: ICaptures, hourToIncrement = 0) {
+    async addOrUpdateTimestamp(empId: string, date: Date, capture: ICaptures, hourToIncrement = 0, location: ICustomLocation) {
         let nextDay = new Date(date);
         nextDay.setDate(nextDay.getDate() + 1);
         nextDay.setHours(0, 0, 0, 0);
@@ -51,6 +51,10 @@ export default class TrackerService {
             {
                 empId: empId,
                 createdAt: { $gte: todaysDate, $lt: nextDay },
+                location: {
+                    longitude: location.latitude || -1,
+                    latitude: location.latitude || -1,
+                },
             },
             {
                 $push: {

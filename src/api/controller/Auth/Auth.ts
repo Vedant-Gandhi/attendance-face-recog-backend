@@ -36,7 +36,6 @@ export const login = async (req: Request, res: Response) => {
     try {
         const empId = req.body.empId;
         const password = req.body.password;
-        const location = req.body.cords || {};
 
         const currentDate = new Date();
 
@@ -62,16 +61,7 @@ export const login = async (req: Request, res: Response) => {
         }
 
         // If the user is not employee and also today's track does not exist then only create a new track
-        if (!doesTrackAlreadyExist && user.role === UserRoles.EMPLOYEE) {
-            await trackerService.createStorageService({
-                empId: empId,
-                loginTime: currentDate,
-                location: {
-                    longitude: location.latitude || -1,
-                    latitude: location.latitude || -1,
-                },
-            });
-        }
+
         const isPasswordMatch = await checkPasswordValidity(password, user.passwordHash);
 
         if (!isPasswordMatch) {
