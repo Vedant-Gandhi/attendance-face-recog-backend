@@ -7,8 +7,12 @@ class EmployeeService {
         return createdEmployee.toJSON();
     }
 
-    async getByEmpId(empId: string, options = { ignoreFields: [""] }) {
-        const createdEmployee = await employeeModel.findOne({ empId: empId || "" });
+    async getByEmpId(empId: string, options?: { ignoreFields?: Array<String> }) {
+        if (!options) options = {};
+        let mappedIgnoreFields = options?.ignoreFields
+            ? options.ignoreFields.map((field) => `-${field}`).reduce((accumulator, field) => `${accumulator} ${field} `)
+            : undefined;
+        const createdEmployee = await employeeModel.findOne({ empId: empId || "" }, mappedIgnoreFields);
         return createdEmployee === null ? null : createdEmployee.toJSON();
     }
 
@@ -23,7 +27,7 @@ class EmployeeService {
 
     async getEmployeesByName(namePattern: string) {
         let employees = await employeeModel.find({ $text: { $search: namePattern || "" } });
-        return employees.map(employee=>employee.toJSON())
+        return employees.map((employee) => employee.toJSON());
     }
 
     async getEmployeesPaginated(options = { limit: 10, page: 1, ignoreFields: [""] }) {

@@ -1,3 +1,4 @@
+import { logInfo } from "../../logger/logger";
 import hoursModel, { ICaptures, ICustomLocation, IHours } from "../../models/Hours/Hours";
 
 export default class TrackerService {
@@ -16,7 +17,7 @@ export default class TrackerService {
         nextDay.setDate(date.getDate() + 1);
         nextDay.setHours(0, 0, 0, 0);
 
-        let todaysDay = date;
+        let todaysDay = new Date(date);
         todaysDay.setHours(0, 0, 0, 0);
 
         let details = await hoursModel.findOne({ empId: empId, createdAt: { $gte: todaysDay, $lt: nextDay } });
@@ -40,17 +41,19 @@ export default class TrackerService {
     }
 
     async addOrUpdateTimestamp(empId: string, date: Date, capture: ICaptures, hourToIncrement = 0, location: ICustomLocation) {
-        let nextDay = new Date(date);
+        console.log(new Date());
+        console.log(date);
+        let nextDay = new Date(date.toISOString());
         nextDay.setDate(nextDay.getDate() + 1);
-        nextDay.setHours(0, 0, 0, 0);
+        //nextDay.setHours(0, 0, 0, 0);
 
-        let todaysDate = new Date(date);
-        todaysDate.setHours(0, 0, 0, 0);
+        let todaysDate = new Date(date.toISOString());
+        //todaysDate.setHours(0, 0, 0, 0);
 
         const updatedCapture = await hoursModel.findOneAndUpdate(
             {
                 empId: empId,
-                createdAt: { $gte: todaysDate, $lt: nextDay },
+                createdAt: { $gte: todaysDate.toISOString(), $lt: nextDay.toISOString() },
                 location: {
                     longitude: location.latitude || -1,
                     latitude: location.latitude || -1,
@@ -68,6 +71,7 @@ export default class TrackerService {
                 upsert: true,
             }
         );
+        logInfo("Updated capture", updatedCapture);
 
         return updatedCapture === null ? null : updatedCapture;
     }

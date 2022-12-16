@@ -47,10 +47,6 @@ export const login = async (req: Request, res: Response) => {
 
         const authService = new AuthService();
         const employeeService = new EmployeeService();
-        const trackerService = new TrackerService();
-
-        // Check here if track exists for todays day
-        const doesTrackAlreadyExist = await trackerService.checkTimestampexists(empId, currentDate);
 
         // Get the employee
         const user = await authService.getByEmpId(empId);

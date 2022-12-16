@@ -64,7 +64,7 @@ export const imageVerifier = async (req: Request, res: Response) => {
 
         // Add timestamp to the database
         if (!verifyOnly) {
-            await trackerService.addOrUpdateTimestamp(empId, new Date(), { isMatch: isMatch, timeStamp: currentDate }, hoursToIncrement, location);
+            await trackerService.addOrUpdateTimestamp(empId, currentDate, { isMatch: isMatch, timeStamp: currentDate }, hoursToIncrement, location);
         }
         res.send({ isMatch: isMatch });
     } catch (error) {
