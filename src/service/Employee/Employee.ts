@@ -56,11 +56,11 @@ class EmployeeService {
 
     async getEmployeeMonthlyData(empId: string, date: Date) {
         let startDate = new Date(date);
-        startDate.setHours(0, 0, 0, 0);
+        startDate.setUTCHours(0, 0, 0, 0);
         startDate.setDate(1);
 
         let endDate = new Date(date);
-        endDate.setHours(0, 0, 0, 0);
+        endDate.setUTCHours(0, 0, 0, 0);
         endDate.setDate(1);
         endDate.setMonth(endDate.getMonth() + 1);
 

@@ -39,9 +39,12 @@ export const imageVerifier = async (req: Request, res: Response) => {
         }
 
         const trackerDetails = await trackerService.getDetailsByEmpIdforSingleDay(empId, currentDate);
+        console.log("Tracker details");
+        console.log(trackerDetails);
 
         if (trackerDetails !== null && !verifyOnly) {
             let lastTimeStamp = trackerDetails.verificationCaptures?.pop();
+            console.log(lastTimeStamp, "Last timestamp");
             if (lastTimeStamp) {
                 let diff = await getTimeDiffInHours(currentDate, lastTimeStamp.timeStamp);
                 hoursToIncrement = diff;

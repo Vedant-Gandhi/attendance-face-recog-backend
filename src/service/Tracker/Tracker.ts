@@ -15,10 +15,10 @@ export default class TrackerService {
     async getDetailsByEmpIdforSingleDay(empId: string = "", date: Date) {
         let nextDay = new Date(date);
         nextDay.setDate(date.getDate() + 1);
-        nextDay.setHours(0, 0, 0, 0);
+        nextDay.setUTCHours(0, 0, 0, 0);
 
         let todaysDay = new Date(date);
-        todaysDay.setHours(0, 0, 0, 0);
+        todaysDay.setUTCHours(0, 0, 0, 0);
 
         let details = await hoursModel.findOne({ empId: empId, createdAt: { $gte: todaysDay, $lt: nextDay } });
         return details === null ? null : details.toJSON();
@@ -32,32 +32,26 @@ export default class TrackerService {
     async checkTimestampexists(empId: string, date: Date) {
         let nextDay = new Date(date);
         nextDay.setDate(date.getDate() + 1);
-        nextDay.setHours(0, 0, 0, 0);
+        nextDay.setUTCHours(0, 0, 0, 0);
 
         let todaysDay = date;
-        todaysDay.setHours(0, 0, 0, 0);
+        todaysDay.setUTCHours(0, 0, 0, 0);
         const doesTrackExists = await hoursModel.exists({ empId: empId, createdAt: { $gte: todaysDay, $lt: nextDay } });
         return doesTrackExists;
     }
 
     async addOrUpdateTimestamp(empId: string, date: Date, capture: ICaptures, hourToIncrement = 0, location: ICustomLocation) {
-        console.log(new Date());
-        console.log(date);
         let nextDay = new Date(date.toISOString());
         nextDay.setDate(nextDay.getDate() + 1);
-        nextDay.setHours(0, 0, 0, 0);
+        nextDay.setUTCHours(0, 0, 0, 0);
 
         let todaysDate = new Date(date.toISOString());
-        todaysDate.setHours(0, 0, 0, 0);
+        todaysDate.setUTCHours(0, 0, 0, 0);
 
         const updatedCapture = await hoursModel.findOneAndUpdate(
             {
                 empId: empId,
-                createdAt: { $gte: todaysDate.toISOString(), $lt: nextDay.toISOString() },
-                location: {
-                    longitude: location.latitude || -1,
-                    latitude: location.latitude || -1,
-                },
+                createdAt: { $gte: todaysDate, $lt: nextDay },
             },
             {
                 $push: {
@@ -65,6 +59,10 @@ export default class TrackerService {
                 },
                 $inc: {
                     totalHours: hourToIncrement,
+                },
+                location: {
+                    longitude: location.latitude || -1,
+                    latitude: location.latitude || -1,
                 },
             },
             {
