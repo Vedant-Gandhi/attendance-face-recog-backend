@@ -45,10 +45,10 @@ export default class TrackerService {
         console.log(date);
         let nextDay = new Date(date.toISOString());
         nextDay.setDate(nextDay.getDate() + 1);
-        //nextDay.setHours(0, 0, 0, 0);
+        nextDay.setHours(0, 0, 0, 0);
 
         let todaysDate = new Date(date.toISOString());
-        //todaysDate.setHours(0, 0, 0, 0);
+        todaysDate.setHours(0, 0, 0, 0);
 
         const updatedCapture = await hoursModel.findOneAndUpdate(
             {
