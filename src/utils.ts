@@ -10,7 +10,7 @@ export async function checkPasswordValidity(password: string, hash: string) {
 export async function getTimeDiffInHours(date1: Date, date2: Date) {
     let diff = (date2.getTime() - date1.getTime()) / 1000;
     diff /= 60 * 60; // operation equals to seconds/(seconds*mins) [These are what the values must be interpreted to.]
-    return Math.abs(Number(diff.toFixed(2)));
+    return Math.abs(Number(diff.toFixed(5)));
 }
 
 export function calculateTimeDiffFromNowToDayEnd(date: Date) {

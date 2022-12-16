@@ -39,8 +39,7 @@ export const imageVerifier = async (req: Request, res: Response) => {
         }
 
         const trackerDetails = await trackerService.getDetailsByEmpIdforSingleDay(empId, currentDate);
-        console.log("Tracker details");
-        console.log(trackerDetails);
+    
 
         if (trackerDetails !== null && !verifyOnly) {
             let lastTimeStamp = trackerDetails.verificationCaptures?.pop();
