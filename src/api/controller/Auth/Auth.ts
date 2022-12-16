@@ -162,3 +162,24 @@ export const resetPassword = async (req: Request, res: Response) => {
         res.status(500).send({ code: "server/internal-error", message: "An internal server error occured" });
     }
 };
+
+export const createAdmin = async (req: Request, res: Response) => {
+    try {
+        const empId = req.body.empId;
+        const password = req.body.password;
+
+        const authService = new AuthService();
+
+        const hashedPassword = await generatePasswordHash(password);
+
+        const createdAdmin = await authService.createUser({
+            empId: empId,
+            passwordHash: hashedPassword,
+            role: UserRoles.ADMIN,
+        });
+        res.status(201).send({ ...createdAdmin, passwordHash: undefined });
+    } catch (error) {
+        logError("An error occured in Employee Register API", error);
+        res.status(500).send({ code: "server/internal-error", message: "An internal server error occured" });
+    }
+};
