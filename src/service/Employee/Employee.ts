@@ -54,11 +54,20 @@ class EmployeeService {
         };
     }
 
+    /**
+     * 
+     * @param empId The employee id
+     * @param date The current month whose data is to be fetched
+     * @description Fetch the monthly attendance data for the employee
+     * @returns 
+     */
     async getEmployeeMonthlyData(empId: string, date: Date) {
+        // All dates are in UTC.
         let startDate = new Date(date);
         startDate.setUTCHours(0, 0, 0, 0);
         startDate.setDate(1);
 
+        // All working is in UTC.
         let endDate = new Date(date);
         endDate.setUTCHours(0, 0, 0, 0);
         endDate.setDate(1);
